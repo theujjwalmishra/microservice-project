@@ -1,1 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup-and-test-task
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: cleanup
+      image: alpine:latest
+      script: |
+        echo "Cleaning up temporary build files..."
+        rm -rf /tmp/build-*
+
+    - name: run-unit-tests
+      image: python:3.9-slim
+      workingDir: $(workspaces.source.path)
+      script: |
+        pip install nosetests coverage
+        nosetests --with-coverage
 
